@@ -1,1 +1,34 @@
 
+name: Criar release e zip
+
+on:
+  workflow_dispatch:
+    inputs:
+      versao:
+        description: 'Digite a versão (ex: 1.0.0)'
+        required: true
+        default: '1.0.0'
+
+permissions:
+  contents: write
+
+jobs:
+  first-jobs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Mostrar versão informada
+        run: echo "A versão informada foi ${{ github.event.inputs.versao }}"
+
+      - name: Criar arquivo ZIP
+        run: |
+          zip -r repo-${{ github.event.inputs.versao }}.zip .
+
+      - name: Criar release e enviar ZIP
+        uses: ncipollo/release-action@v1
+        with:
+          tag: v${{ github.event.inputs.versao }}
+          files: repo-${{ github.event.inputs.versao }}.zip
+
